@@ -15,12 +15,19 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
     const { firstName, lastName, photo } = user;
 
     const [rating, setRating] = useState(0);
-
+    const [mediaFile, setMediaFile] = useState<File | null>(null);
+    const [mediaTitle, setMediaTitle] = useState("");
 
     const handleRatingChange = (newRating: SetStateAction<number>) => {
         setRating(newRating);
     };
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+          setMediaFile(file);
+        }
+    };
 
     return (
         <div>
@@ -55,10 +62,30 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
                         ))}
                     </label>
                 </div>
-
+                <div>
+                    <h2>Фото или видео:</h2>
+                    <input type="file" accept="image/*, video/*" onChange={handleFileChange} />
+                    {mediaFile && (
+                        <div>
+                            <p>Предпросмотр:</p>
+                            {mediaFile.type.startsWith("image") ? (
+                                <img src={URL.createObjectURL(mediaFile)} alt="Preview" style={{ width: "100px" }} />
+                            ) : (
+                                <video src={URL.createObjectURL(mediaFile)} controls style={{ width: "100px" }} />
+                            )}
+                        </div>
+                    )}
+                    <input
+                        type="text"
+                        placeholder="Заголовок для медиа"
+                        value={mediaTitle}
+                        onChange={(e) => setMediaTitle(e.target.value)}
+                    />
+                </div>
             </form>
         </div>
     )
 }
+
 
 export default FormPage
