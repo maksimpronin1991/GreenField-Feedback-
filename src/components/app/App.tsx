@@ -7,7 +7,13 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<FormPage />} />
+        <Route path="/" element={<FormPage user={{
+          firstName: 'Max',
+          lastName: 'Trodcki',
+          photo: null
+        }} item={{
+          name: 'Blue boxes',
+        }} />} />
       </Routes>
     </BrowserRouter>
   )

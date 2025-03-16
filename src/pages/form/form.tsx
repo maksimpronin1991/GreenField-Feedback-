@@ -17,6 +17,8 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
     const [rating, setRating] = useState(0);
     const [mediaFile, setMediaFile] = useState<File | null>(null);
     const [mediaTitle, setMediaTitle] = useState("");
+    const [feedback, setFeedback] = useState('');
+    const [isAnonymous, setIsAnonymous] = useState(false);
 
     const handleRatingChange = (newRating: SetStateAction<number>) => {
         setRating(newRating);
@@ -25,7 +27,7 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-          setMediaFile(file);
+            setMediaFile(file);
         }
     };
 
@@ -34,7 +36,7 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
             <form>
                 <h2>Form</h2>
                 <div>
-                    <h2 className="form_title">Пользователь:</h2>
+                    <h2 className="form_title">Пользователь</h2>
                     <p className="user_name">Имя: {firstName}</p>
                     <p className="user_last-name">Фамилия: {lastName}</p>
                     {photo && <img src={photo} alt="User" className="user_photo" style={{ width: "100px", height: "100px" }} />}
@@ -82,6 +84,27 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
                         onChange={(e) => setMediaTitle(e.target.value)}
                     />
                 </div>
+                <div>
+                    <label>
+                        Отзыв:
+                        <textarea
+                            value={feedback}
+                            onChange={(e) => setFeedback(e.target.value)}
+                            required
+                        />
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={isAnonymous}
+                            onChange={(e) => setIsAnonymous(e.target.checked)}
+                        />
+                        Оставить отзыв анонимно
+                    </label>
+                </div>
+                <button type="submit">Отправить отзыв</button>
             </form>
         </div>
     )
