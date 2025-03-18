@@ -34,22 +34,18 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
     return (
         <div>
             <form>
-                <h2>Form</h2>
-                <div>
-                    <h2 className="form_title">Пользователь</h2>
-                    <p className="user_name">Имя: {firstName}</p>
-                    <p className="user_last-name">Фамилия: {lastName}</p>
+                <h2 className="form-title">Feedback form </h2>
+                <div className="form-user">
+                    <h2 className="user_title">User:</h2>
+                    <p className="user_name">{firstName}</p>
+                    <p className="user_last-name">{lastName}</p>
                     {photo && <img src={photo} alt="User" className="user_photo" style={{ width: "100px", height: "100px" }} />}
                 </div>
-                <div>
+                <div className="form-product">
                     <h2>Наименование:</h2>
-                    <p>{item.name}</p>
+                    <p className="product-name">{item.name}</p>
                 </div>
-                <div>
-                    <p className="product_name">
-                        Product 1
-                    </p>
-                </div>
+
                 <div>
                     <label>
                         Оценка:

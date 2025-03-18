@@ -8,23 +8,40 @@ form {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  align-items: center; /* Центрирование по горизонтали */
+  align-items: start;
 }
 
 h2 {
   text-align: center;
   color: #333;
-  margin-bottom: 20px;
+  font-weight: bold;
 }
 
-/* Стили для информации о пользователе */
-.user_name,
-.user_last-name {
-  margin: 5px 0;
-  font-size: 1.1rem;
-  color: #555;
-  text-align: center; /* Центрирование текста */
+.form-title {
+  font-size: 30px;
+  font-weight: bold;
+  color: #333;
 }
+
+.form-user {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding-top: 20px;
+}
+
+.form-product {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding-top: 20px;
+
+}
+
 
 .user_photo {
   display: block;
@@ -48,7 +65,8 @@ label {
   margin: 15px 0;
   font-size: 1.1rem;
   color: #555;
-  text-align: center; /* Центрирование текста */
+  text-align: center;
+  /* Центрирование текста */
 }
 
 span {
@@ -60,7 +78,8 @@ span {
 /* Стили для загрузки медиа */
 input[type="file"] {
   margin: 10px 0;
-  text-align: center; /* Центрирование текста */
+  text-align: center;
+  /* Центрирование текста */
 }
 
 input[type="text"] {
@@ -70,14 +89,16 @@ input[type="text"] {
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 1rem;
-  text-align: center; /* Центрирование текста */
+  text-align: center;
+  /* Центрирование текста */
 }
 
 /* Стили для превью медиа */
 img,
 video {
   display: block;
-  margin: 10px auto; /* Центрирование медиа */
+  margin: 10px auto;
+  /* Центрирование медиа */
   border-radius: 8px;
 }
 
@@ -91,7 +112,8 @@ textarea {
   font-size: 1rem;
   resize: vertical;
   min-height: 100px;
-  text-align: center; /* Центрирование текста */
+  text-align: center;
+  /* Центрирование текста */
 }
 
 /* Стили для чекбокса анонимности */
@@ -111,7 +133,8 @@ button {
   font-size: 1.1rem;
   cursor: pointer;
   margin-top: 20px;
-  text-align: center; /* Центрирование текста */
+  text-align: center;
+  /* Центрирование текста */
 }
 
 button:hover {
