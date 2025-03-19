@@ -21,6 +21,7 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
     const [isAnonymous, setIsAnonymous] = useState(false);
 
     const handleRatingChange = (newRating: SetStateAction<number>) => {
+        console.log(newRating)
         setRating(newRating);
     };
 
