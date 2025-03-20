@@ -16,7 +16,6 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
 
     const [rating, setRating] = useState(0);
     const [mediaFile, setMediaFile] = useState<File | null>(null);
-    const [mediaTitle, setMediaTitle] = useState("");
     const [feedback, setFeedback] = useState('');
     const [isAnonymous, setIsAnonymous] = useState(false);
 
@@ -47,23 +46,9 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
                     <p className="product-name">{item.name}</p>
                 </div>
 
-                <div>
-                    <label>
-                        Оценка:
-                        {[1, 2, 3, 4, 5].map((star) => (
-                            <span
-                                key={star}
-                                style={{ cursor: 'pointer', color: star <= rating ? 'gold' : 'gray' }}
-                                onClick={() => handleRatingChange(star)}
-                            >
-                                ★
-                            </span>
-                        ))}
-                    </label>
-                </div>
-                <div>
-                    <h2>Фото или видео:</h2>
-                    <input type="file" accept="image/*, video/*" onChange={handleFileChange} />
+                <div className="media">
+                    <h2>Добавьте фото или видео вашего {item.name}</h2>
+                    <input className="media-input" type="file" accept="image/*, video/*" onChange={handleFileChange} />
                     {mediaFile && (
                         <div>
                             <p>Предпросмотр:</p>
@@ -74,21 +59,29 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
                             )}
                         </div>
                     )}
-                    <input
-                        type="text"
-                        placeholder="Заголовок для медиа"
-                        value={mediaTitle}
-                        onChange={(e) => setMediaTitle(e.target.value)}
-                    />
                 </div>
                 <div>
                     <label>
                         Отзыв:
                         <textarea
+                            className="form-textarea"
                             value={feedback}
                             onChange={(e) => setFeedback(e.target.value)}
                             required
                         />
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        {[1, 2, 3, 4, 5].map((star) => (
+                            <span
+                                key={star}
+                                style={{ cursor: 'pointer', color: star <= rating ? 'gold' : 'gray' }}
+                                onClick={() => handleRatingChange(star)}
+                            >
+                                ★
+                            </span>
+                        ))}
                     </label>
                 </div>
                 <div>

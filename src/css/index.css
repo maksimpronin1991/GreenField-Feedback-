@@ -1,14 +1,14 @@
-/* Основные стили для формы */
 form {
   max-width: 600px;
   margin: 20px auto;
   padding: 20px;
+  padding-top: 5px;
   background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  align-items: start;
+  align-items: center;
 }
 
 h2 {
@@ -39,7 +39,6 @@ h2 {
   align-items: center;
   gap: 10px;
   padding-top: 20px;
-
 }
 
 
@@ -50,7 +49,6 @@ h2 {
   border: 2px solid #ddd;
 }
 
-/* Стили для наименования товара */
 .product_name {
   font-size: 1.2rem;
   font-weight: bold;
@@ -59,14 +57,25 @@ h2 {
   margin: 15px 0;
 }
 
-/* Стили для рейтинга */
+.media{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 20px;
+}
+
+.media-input{
+  margin: 10px auto;
+  text-align: center;
+}
+
+
 label {
   display: block;
   margin: 15px 0;
   font-size: 1.1rem;
   color: #555;
   text-align: center;
-  /* Центрирование текста */
 }
 
 span {
@@ -75,12 +84,6 @@ span {
   cursor: pointer;
 }
 
-/* Стили для загрузки медиа */
-input[type="file"] {
-  margin: 10px 0;
-  text-align: center;
-  /* Центрирование текста */
-}
 
 input[type="text"] {
   width: 100%;
@@ -90,19 +93,15 @@ input[type="text"] {
   border-radius: 4px;
   font-size: 1rem;
   text-align: center;
-  /* Центрирование текста */
 }
 
-/* Стили для превью медиа */
 img,
 video {
   display: block;
   margin: 10px auto;
-  /* Центрирование медиа */
   border-radius: 8px;
 }
 
-/* Стили для текстового поля отзыва */
 textarea {
   width: 100%;
   padding: 10px;
@@ -110,18 +109,14 @@ textarea {
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 1rem;
-  resize: vertical;
   min-height: 100px;
-  text-align: center;
-  /* Центрирование текста */
+  text-align: left;
 }
 
-/* Стили для чекбокса анонимности */
 label input[type="checkbox"] {
   margin-right: 10px;
 }
 
-/* Стили для кнопки отправки */
 button {
   display: block;
   width: 100%;
@@ -134,7 +129,6 @@ button {
   cursor: pointer;
   margin-top: 20px;
   text-align: center;
-  /* Центрирование текста */
 }
 
 button:hover {
