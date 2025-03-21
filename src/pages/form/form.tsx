@@ -1,15 +1,6 @@
 import { JSX, SetStateAction, useState } from "react";
+import FormPageProp from "../../types/types";
 
-type FormPageProp = {
-    user: {
-        firstName: string;
-        lastName: string;
-        photo: string | null;
-    };
-    item: {
-        name: string;
-    };
-}
 
 function FormPage({ user, item }: FormPageProp): JSX.Element {
     const { firstName, lastName, photo } = user;
@@ -31,9 +22,26 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
         }
     };
 
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+    
+        const formData = {
+            firstName,
+             lastName,
+              photo,
+            rating,
+            mediaFile,
+            feedback,
+            isAnonymous,
+        };
+    
+        console.log("Form Data:", formData);
+    
+    };
+
     return (
         <div>
-            <form>
+            <form onSubmit={handleSubmit}>
                 <h2 className="form-title">Feedback form </h2>
                 <div className="form-user">
                     <h2 className="user_title">User:</h2>
