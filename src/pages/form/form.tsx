@@ -1,8 +1,11 @@
 import { JSX, SetStateAction, useState } from "react";
 import FormPageProp from "../../types/types";
+import { FieldValues, useForm } from "react-hook-form";
 
 
 function FormPage({ user, item }: FormPageProp): JSX.Element {
+    const { register, handleSubmit, formState: { errors } } = useForm();
+
     const { firstName, lastName, photo } = user;
 
     const [rating, setRating] = useState(0);
@@ -22,26 +25,25 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
         }
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-    
+    const onSubmit = () => {
+
         const formData = {
             firstName,
-             lastName,
-              photo,
+            lastName,
+            photo,
             rating,
             mediaFile,
             feedback,
             isAnonymous,
         };
-    
+
         console.log("Form Data:", formData);
-    
+
     };
 
     return (
         <div>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit(onSubmit)}>
                 <h2 className="form-title">Feedback form </h2>
                 <div className="form-user">
                     <h2 className="user_title">User:</h2>
@@ -72,11 +74,12 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
                     <label>
                         Отзыв:
                         <textarea
+                            {...register('name', { required: true })}
                             className="form-textarea"
                             value={feedback}
                             onChange={(e) => setFeedback(e.target.value)}
-                            required
                         />
+                          {errors.name && <span>Это поле обязательно</span>}
                     </label>
                 </div>
                 <div>
@@ -107,6 +110,7 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
         </div>
     )
 }
+
 
 
 export default FormPage
