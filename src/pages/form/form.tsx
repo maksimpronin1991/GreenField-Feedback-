@@ -1,10 +1,11 @@
 import { JSX, SetStateAction, useState } from "react";
 import FormPageProp from "../../types/types";
-import { FieldValues, useForm } from "react-hook-form";
-
+import { useForm } from "react-hook-form";
 
 function FormPage({ user, item }: FormPageProp): JSX.Element {
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const { register, handleSubmit, formState: { errors } } = useForm({
+        mode: 'onChange',
+    });
 
     const { firstName, lastName, photo } = user;
 
@@ -26,7 +27,6 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
     };
 
     const onSubmit = () => {
-
         const formData = {
             firstName,
             lastName,
@@ -38,7 +38,6 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
         };
 
         console.log("Form Data:", formData);
-
     };
 
     return (
@@ -58,7 +57,17 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
 
                 <div className="media">
                     <h2>Добавьте фото или видео вашего {item.name}</h2>
-                    <input className="media-input" type="file" accept="image/*, video/*" onChange={handleFileChange} />
+                    <input
+                        {...register('media', { 
+                            required: 'Это поле обязательно',
+                            validate: (value) => value.length > 0 || 'Файл не выбран',
+                        })}
+                        className="media-input"
+                        type="file"
+                        accept="image/*, video/*"
+                        onChange={handleFileChange}
+                    />
+                    {errors.media && <span>{errors.media.message as string}</span>}
                     {mediaFile && (
                         <div>
                             <p>Предпросмотр:</p>
@@ -74,16 +83,27 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
                     <label>
                         Отзыв:
                         <textarea
-                            {...register('name', { required: true })}
+                            {...register('feedback', { 
+                                required: 'Это поле обязательно',
+                                minLength: {
+                                    value: 10,
+                                    message: 'Отзыв должен содержать минимум 10 символов'
+                                },
+                                maxLength:{
+                                    value: 500,
+                                    message: 'Отзыв не может быть длиннее 500 символов'
+                                }
+                            })}
                             className="form-textarea"
                             value={feedback}
                             onChange={(e) => setFeedback(e.target.value)}
                         />
-                          {errors.name && <span>Это поле обязательно</span>}
+                        {errors.feedback && <span>{errors.feedback.message as string}</span>}
                     </label>
                 </div>
                 <div>
                     <label>
+                        Рейтинг:
                         {[1, 2, 3, 4, 5].map((star) => (
                             <span
                                 key={star}
@@ -93,6 +113,15 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
                                 ★
                             </span>
                         ))}
+                        <input
+                            type="hidden"
+                            {...register('rating', { 
+                                required: 'Рейтинг обязателен',
+                                validate: (value) => value > 0 || 'Выберите рейтинг'
+                            })}
+                            value={rating}
+                        />
+                        {errors.rating && <span>{errors.rating.message as string}</span>}
                     </label>
                 </div>
                 <div>
@@ -112,5 +141,4 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
 }
 
 
-
-export default FormPage
+export default FormPage;
