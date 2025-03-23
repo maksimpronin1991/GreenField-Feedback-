@@ -1,4 +1,4 @@
-import { JSX, SetStateAction, useState } from "react";
+import { JSX, SetStateAction, useState, useRef } from "react"; // Добавлен useRef
 import FormPageProp from "../../types/types";
 import { useForm } from "react-hook-form";
 
@@ -13,6 +13,9 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
     const [mediaFile, setMediaFile] = useState<File | null>(null);
     const [feedback, setFeedback] = useState('');
     const [isAnonymous, setIsAnonymous] = useState(false);
+
+    // Ref для input[type="file"]
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     const handleRatingChange = (newRating: SetStateAction<number>) => {
         console.log(newRating)
@@ -38,6 +41,13 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
         };
 
         console.log("Form Data:", formData);
+    };
+
+    const handleMediaRemove = () => {
+        setMediaFile(null); // Удаляем файл из состояния
+        if (fileInputRef.current) {
+            fileInputRef.current.value = ""; // Сбрасываем значение input[type="file"]
+        }
     };
 
     return (
@@ -66,6 +76,10 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
                         type="file"
                         accept="image/*, video/*"
                         onChange={handleFileChange}
+                        ref={(e) => {
+                            fileInputRef.current = e; // Сохраняем ссылку на input
+                            register('media').ref(e); // Регистрируем ref в react-hook-form
+                        }}
                     />
                     {errors.media && <span>{errors.media.message as string}</span>}
                     {mediaFile && (
@@ -76,6 +90,13 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
                             ) : (
                                 <video src={URL.createObjectURL(mediaFile)} controls style={{ width: "100px" }} />
                             )}
+                            <button 
+                                className="remove-button" 
+                                onClick={handleMediaRemove}
+                                type="button" // Убедитесь, что кнопка не отправляет форму
+                            >
+                                Удалить
+                            </button>
                         </div>
                     )}
                 </div>
@@ -139,6 +160,5 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
         </div>
     )
 }
-
 
 export default FormPage;
