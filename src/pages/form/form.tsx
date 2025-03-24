@@ -14,7 +14,6 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
     const [feedback, setFeedback] = useState('');
     const [isAnonymous, setIsAnonymous] = useState(false);
 
-    // Ref для input[type="file"]
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     const handleRatingChange = (newRating: SetStateAction<number>) => {
@@ -44,10 +43,18 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
     };
 
     const handleMediaRemove = () => {
-        setMediaFile(null); // Удаляем файл из состояния
+        setMediaFile(null); 
         if (fileInputRef.current) {
-            fileInputRef.current.value = ""; // Сбрасываем значение input[type="file"]
+            fileInputRef.current.value = ""; 
         }
+    };
+
+    const validateFileSize = (file: File) => {
+        const maxSize = 5 * 1024 * 1024; 
+        if (file.size > maxSize) {
+            return "Файл слишком большой. Максимальный размер: 5 МБ.";
+        }
+        return true;
     };
 
     return (
@@ -69,16 +76,23 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
                     <h2>Добавьте фото или видео вашего {item.name}</h2>
                     <input
                         {...register('media', { 
-                            required: 'Это поле обязательно',
-                            validate: (value) => value.length > 0 || 'Файл не выбран',
+                            required: 'Необходимо добавить фото или видео',
+                            validate: (value: FileList) => {
+                                if (value && value.length > 0) {
+                                    const file = value[0];
+                                    return validateFileSize(file);
+                                }
+                                return true;
+                            },
+
                         })}
                         className="media-input"
                         type="file"
                         accept="image/*, video/*"
                         onChange={handleFileChange}
                         ref={(e) => {
-                            fileInputRef.current = e; // Сохраняем ссылку на input
-                            register('media').ref(e); // Регистрируем ref в react-hook-form
+                            fileInputRef.current = e; 
+                            register('media').ref(e); 
                         }}
                     />
                     {errors.media && <span>{errors.media.message as string}</span>}
@@ -93,7 +107,7 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
                             <button 
                                 className="remove-button" 
                                 onClick={handleMediaRemove}
-                                type="button" // Убедитесь, что кнопка не отправляет форму
+                                type="button" 
                             >
                                 Удалить
                             </button>
