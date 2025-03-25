@@ -1,178 +1,252 @@
-import { JSX, SetStateAction, useState, useRef } from "react"; // Добавлен useRef
+import { JSX, useState, useRef } from "react";
 import FormPageProp from "../../types/types";
 import { useForm } from "react-hook-form";
 
+interface FormValues {
+  media?: FileList;
+  feedback: string;
+  rating: number;
+  isAnonymous: boolean;
+}
+
 function FormPage({ user, item }: FormPageProp): JSX.Element {
-    const { register, handleSubmit, formState: { errors } } = useForm({
-        mode: 'onChange',
-    });
+  // Состояния для хранения данных формы
+  const [formData, setFormData] = useState<unknown>(null);
+  const [rating, setRating] = useState(0);
+  const [mediaFile, setMediaFile] = useState<File | null>(null);
+  const [feedback, setFeedback] = useState('');
+  const [isAnonymous, setIsAnonymous] = useState(false);
 
-    const { firstName, lastName, photo } = user;
+  // Настройки react-hook-form
+  const {
+    register,
+    formState: { errors },
+    trigger,
+    setValue,
+    
+  } = useForm<FormValues>({
+    mode: "onChange"
+  });
 
-    const [rating, setRating] = useState(0);
-    const [mediaFile, setMediaFile] = useState<File | null>(null);
-    const [feedback, setFeedback] = useState('');
-    const [isAnonymous, setIsAnonymous] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
+  // Функция для валидации и отправки формы
+  const validateAndSubmit = async () => {
+    // Синхронизируем текущие значения с react-hook-form
+    setValue('rating', rating);
+    setValue('feedback', feedback);
+    setValue('isAnonymous', isAnonymous);
+    
+    if (mediaFile) {
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(mediaFile);
+      setValue('media', dataTransfer.files);
+    }
 
-    const handleRatingChange = (newRating: SetStateAction<number>) => {
-        console.log(newRating)
-        setRating(newRating);
-    };
+    // Валидируем все поля
+    const isValid = await trigger();
+    
+    if (isValid) {
+      const validatedData = {
+        user: {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          photo: user.photo
+        },
+        product: {
+          name: item.name
+        },
+        rating,
+        feedback,
+        isAnonymous,
+        media: mediaFile
+      };
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            setMediaFile(file);
-        }
-    };
+      setFormData(validatedData);
+      console.log("Validated form data:", validatedData);
+      
+      // Здесь можно добавить отправку данных на сервер
+    }
+  };
 
-    const onSubmit = () => {
-        const formData = {
-            firstName,
-            lastName,
-            photo,
-            rating,
-            mediaFile,
-            feedback,
-            isAnonymous,
-        };
+  // Обработчики изменений полей
+  const handleRatingChange = (newRating: number) => {
+    setRating(newRating);
+  };
 
-        console.log("Form Data:", formData);
-    };
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    setMediaFile(file || null);
+  };
 
-    const handleMediaRemove = () => {
-        setMediaFile(null); 
-        if (fileInputRef.current) {
-            fileInputRef.current.value = ""; 
-        }
-    };
+  const handleFeedbackChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setFeedback(e.target.value);
+  };
 
-    const validateFileSize = (file: File) => {
-        const maxSize = 5 * 1024 * 1024; 
-        if (file.size > maxSize) {
-            return "Файл слишком большой. Максимальный размер: 5 МБ.";
-        }
-        return true;
-    };
+  const handleAnonymousChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsAnonymous(e.target.checked);
+  };
 
-    return (
-        <div>
-            <form onSubmit={handleSubmit(onSubmit)}>
-                <h2 className="form-title">Feedback form </h2>
-                <div className="form-user">
-                    <h2 className="user_title">User:</h2>
-                    <p className="user_name">{firstName}</p>
-                    <p className="user_last-name">{lastName}</p>
-                    {photo && <img src={photo} alt="User" className="user_photo" style={{ width: "100px", height: "100px" }} />}
-                </div>
-                <div className="form-product">
-                    <h2>Наименование:</h2>
-                    <p className="product-name">{item.name}</p>
-                </div>
+  const handleMediaRemove = () => {
+    setMediaFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+    setValue('media', undefined);
+  };
 
-                <div className="media">
-                    <h2>Добавьте фото или видео вашего {item.name}</h2>
-                    <input
-                        {...register('media', { 
-                            required: 'Необходимо добавить фото или видео',
-                            validate: (value: FileList) => {
-                                if (value && value.length > 0) {
-                                    const file = value[0];
-                                    return validateFileSize(file);
-                                }
-                                return true;
-                            },
-
-                        })}
-                        className="media-input"
-                        type="file"
-                        accept="image/*, video/*"
-                        onChange={handleFileChange}
-                        ref={(e) => {
-                            fileInputRef.current = e; 
-                            register('media').ref(e); 
-                        }}
-                    />
-                    {errors.media && <span>{errors.media.message as string}</span>}
-                    {mediaFile && (
-                        <div>
-                            <p>Предпросмотр:</p>
-                            {mediaFile.type.startsWith("image") ? (
-                                <img src={URL.createObjectURL(mediaFile)} alt="Preview" style={{ width: "100px" }} />
-                            ) : (
-                                <video src={URL.createObjectURL(mediaFile)} controls style={{ width: "100px" }} />
-                            )}
-                            <button 
-                                className="remove-button" 
-                                onClick={handleMediaRemove}
-                                type="button" 
-                            >
-                                Удалить
-                            </button>
-                        </div>
-                    )}
-                </div>
-                <div>
-                    <label>
-                        Отзыв:
-                        <textarea
-                            {...register('feedback', { 
-                                required: 'Это поле обязательно',
-                                minLength: {
-                                    value: 10,
-                                    message: 'Отзыв должен содержать минимум 10 символов'
-                                },
-                                maxLength:{
-                                    value: 500,
-                                    message: 'Отзыв не может быть длиннее 500 символов'
-                                }
-                            })}
-                            className="form-textarea"
-                            value={feedback}
-                            onChange={(e) => setFeedback(e.target.value)}
-                        />
-                        {errors.feedback && <span>{errors.feedback.message as string}</span>}
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        Рейтинг:
-                        {[1, 2, 3, 4, 5].map((star) => (
-                            <span
-                                key={star}
-                                style={{ cursor: 'pointer', color: star <= rating ? 'gold' : 'gray' }}
-                                onClick={() => handleRatingChange(star)}
-                            >
-                                ★
-                            </span>
-                        ))}
-                        <input
-                            type="hidden"
-                            {...register('rating', { 
-                                required: 'Рейтинг обязателен',
-                                validate: (value) => value > 0 || 'Выберите рейтинг'
-                            })}
-                            value={rating}
-                        />
-                        {errors.rating && <span>{errors.rating.message as string}</span>}
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        <input
-                            type="checkbox"
-                            checked={isAnonymous}
-                            onChange={(e) => setIsAnonymous(e.target.checked)}
-                        />
-                        Оставить отзыв анонимно
-                    </label>
-                </div>
-                <button type="submit">Отправить отзыв</button>
-            </form>
+  return (
+    <div className="form-container">
+      <form noValidate>
+        <h2 className="form-title">Feedback form</h2>
+        
+        {/* Информация о пользователе */}
+        <div className="form-user">
+          <h3>User:</h3>
+          <p>{user.firstName} {user.lastName}</p>
+          {user.photo && (
+            <img 
+              src={user.photo} 
+              alt="User" 
+              className="user-photo" 
+              width={100} 
+              height={100} 
+            />
+          )}
         </div>
-    )
+
+        {/* Информация о продукте */}
+        <div className="form-product">
+          <h3>Product:</h3>
+          <p>{item.name}</p>
+        </div>
+
+        {/* Поле для загрузки медиа */}
+        <div className="form-section">
+          <label>
+            Add photo/video:
+            <input
+              type="file"
+              accept="image/*,video/*"
+              {...register("media", {
+                required: "Please select a file",
+                validate: {
+                  fileSize: (files) => 
+                    !files?.[0] || files[0].size <= 5 * 1024 * 1024 || "Max file size is 5MB",
+                  fileType: (files) =>
+                    !files?.[0] || 
+                    files[0].type.startsWith("image/") || 
+                    files[0].type.startsWith("video/") || 
+                    "Only images and videos are allowed"
+                }
+              })}
+              onChange={handleFileChange}
+              ref={fileInputRef}
+            />
+            {errors.media && (
+              <span className="error">{errors.media.message}</span>
+            )}
+          </label>
+
+          {mediaFile && (
+            <div className="media-preview">
+              <p>Preview:</p>
+              {mediaFile.type.startsWith("image") ? (
+                <img 
+                  src={URL.createObjectURL(mediaFile)} 
+                  alt="Preview" 
+                  width={100} 
+                />
+              ) : (
+                <video 
+                  src={URL.createObjectURL(mediaFile)} 
+                  controls 
+                  width={100} 
+                />
+              )}
+              <button 
+                type="button" 
+                onClick={handleMediaRemove}
+                className="remove-button"
+              >
+                Remove
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Поле для отзыва */}
+        <div className="form-section">
+          <label>
+            Feedback:
+            <textarea
+              {...register("feedback", {
+                required: "Feedback is required",
+                minLength: { value: 10, message: "Minimum 10 characters" },
+                maxLength: { value: 500, message: "Maximum 500 characters" }
+              })}
+              value={feedback}
+              onChange={handleFeedbackChange}
+              rows={5}
+            />
+            {errors.feedback && (
+              <span className="error">{errors.feedback.message}</span>
+            )}
+          </label>
+        </div>
+
+        {/* Поле для рейтинга */}
+        <div className="form-section">
+          <label>
+            Rating:
+            <div className="rating-stars">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <span
+                  key={star}
+                  className={`star ${star <= rating ? "active" : ""}`}
+                  onClick={() => handleRatingChange(star)}
+                >
+                  ★
+                </span>
+              ))}
+              <input
+                type="hidden"
+                {...register("rating", {
+                  required: "Please select a rating",
+                  validate: (value) => value > 0 || "Please select a rating"
+                })}
+              />
+            </div>
+            {errors.rating && (
+              <span className="error">{errors.rating.message}</span>
+            )}
+          </label>
+        </div>
+
+        {/* Чекбокс анонимности */}
+        <div className="form-section">
+          <label>
+            <input
+              type="checkbox"
+              checked={isAnonymous}
+              {...register("isAnonymous")}
+              onChange={handleAnonymousChange}
+            />
+            Submit anonymously
+          </label>
+        </div>
+
+        {/* Кнопка отправки */}
+        <button 
+          type="button" 
+          onClick={validateAndSubmit}
+          className="submit-button"
+        >
+          Submit Feedback
+        </button>
+      </form>
+    </div>
+  );
 }
 
 export default FormPage;
