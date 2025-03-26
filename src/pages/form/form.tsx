@@ -10,19 +10,20 @@ interface FormValues {
 }
 
 function FormPage({ user, item }: FormPageProp): JSX.Element {
-  // Состояния для хранения данных формы
+
   const [formData, setFormData] = useState<unknown>(null);
   const [rating, setRating] = useState(0);
   const [mediaFile, setMediaFile] = useState<File | null>(null);
   const [feedback, setFeedback] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // Настройки react-hook-form
   const {
     register,
     formState: { errors },
     trigger,
     setValue,
+    reset,
     
   } = useForm<FormValues>({
     mode: "onChange"
@@ -30,9 +31,8 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Функция для валидации и отправки формы
   const validateAndSubmit = async () => {
-    // Синхронизируем текущие значения с react-hook-form
+
     setValue('rating', rating);
     setValue('feedback', feedback);
     setValue('isAnonymous', isAnonymous);
@@ -43,7 +43,6 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
       setValue('media', dataTransfer.files);
     }
 
-    // Валидируем все поля
     const isValid = await trigger();
     
     if (isValid) {
@@ -64,12 +63,33 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
 
       setFormData(validatedData);
       console.log("Validated form data:", validatedData);
-      
-      // Здесь можно добавить отправку данных на сервер
+      resetForm();
     }
   };
 
-  // Обработчики изменений полей
+  const resetForm = () => {
+    setRating(0);
+    setMediaFile(null);
+    setFeedback('');
+    setIsAnonymous(false);
+    setIsSubmitted(true);
+    
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+    
+    // Сброс react-hook-form
+    reset({
+      media: undefined,
+      feedback: '',
+      rating: 0,
+      isAnonymous: false
+    });
+
+    // Через 3 секунды сбрасываем статус отправки
+    setTimeout(() => setIsSubmitted(false), 3000);
+  };
+
   const handleRatingChange = (newRating: number) => {
     setRating(newRating);
   };
@@ -100,7 +120,6 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
       <form noValidate>
         <h2 className="form-title">Feedback form</h2>
         
-        {/* Информация о пользователе */}
         <div className="form-user">
           <h3>User:</h3>
           <p>{user.firstName} {user.lastName}</p>
@@ -115,13 +134,11 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
           )}
         </div>
 
-        {/* Информация о продукте */}
         <div className="form-product">
           <h3>Product:</h3>
           <p>{item.name}</p>
         </div>
 
-        {/* Поле для загрузки медиа */}
         <div className="form-section">
           <label>
             Add photo/video:
@@ -175,7 +192,6 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
           )}
         </div>
 
-        {/* Поле для отзыва */}
         <div className="form-section">
           <label>
             Feedback:
@@ -195,7 +211,6 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
           </label>
         </div>
 
-        {/* Поле для рейтинга */}
         <div className="form-section">
           <label>
             Rating:
@@ -224,7 +239,6 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
           </label>
         </div>
 
-        {/* Чекбокс анонимности */}
         <div className="form-section">
           <label>
             <input
@@ -237,14 +251,19 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
           </label>
         </div>
 
-        {/* Кнопка отправки */}
         <button 
           type="button" 
           onClick={validateAndSubmit}
-          className="submit-button"
+          className={`submit-button ${isSubmitted ? 'disabled' : ''}`}
+          disabled={isSubmitted}
         >
           Submit Feedback
         </button>
+        {isSubmitted && (
+          <div className="success-message">
+            Thank you for your feedback! The form has been cleared.
+          </div>
+        )}
       </form>
     </div>
   );

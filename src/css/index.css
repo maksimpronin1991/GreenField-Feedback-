@@ -71,7 +71,9 @@ h2 {
 
 
 label {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   margin: 15px 0;
   font-size: 1.1rem;
   color: #555;
@@ -133,4 +135,21 @@ button {
 
 button:hover {
   background-color: #3700b3;
+}
+
+.submit-button.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #cccccc;
+}
+
+.success-message {
+  margin-top: 15px;
+  color: green;
+  font-weight: bold;
+}
+
+.error {
+  color: red;
+  margin-top: 15px;
 }
