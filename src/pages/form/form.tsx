@@ -204,6 +204,7 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
                 <span
                   key={star}
                   className={`star ${star <= rating ? "active" : ""}`}
+                  style={{ cursor: 'pointer', color: star <= rating ? 'gold' : 'gray' }}
                   onClick={() => handleRatingChange(star)}
                 >
                   ★
