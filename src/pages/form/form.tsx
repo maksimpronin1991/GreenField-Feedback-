@@ -15,6 +15,7 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
     const [feedback, setFeedback] = useState('');
     const [isAnonymous, setIsAnonymous] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const [notSubmitted, setIsNotSubmitted] = useState(false);
 
     const {
         register,
@@ -75,9 +76,14 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
             }
             catch (error) {
                 console.error("Error submitting form:", error);
+                handleNotSubmitted()
             }
-
         }
+    };
+
+    const handleNotSubmitted = () => {
+        setIsNotSubmitted(true);
+        setTimeout(() => setIsNotSubmitted(false), 3000);
     };
 
 
@@ -274,6 +280,11 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
                 {isSubmitted && (
                     <div className="success-message">
                         Thank you for your feedback! The form has been cleared.
+                    </div>
+                )}
+                {notSubmitted && (
+                    <div className="success-message">
+                       The form not sent. Server mistake. Please try again later.
                     </div>
                 )}
             </form>
