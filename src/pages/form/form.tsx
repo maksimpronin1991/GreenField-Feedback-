@@ -62,7 +62,6 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
       };
 
       setFormData(validatedData);
-      console.log("Validated form data:", validatedData);
       resetForm();
     }
   };
@@ -78,7 +77,6 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
       fileInputRef.current.value = "";
     }
     
-    // Сброс react-hook-form
     reset({
       media: undefined,
       feedback: '',
@@ -86,7 +84,6 @@ function FormPage({ user, item }: FormPageProp): JSX.Element {
       isAnonymous: false
     });
 
-    // Через 3 секунды сбрасываем статус отправки
     setTimeout(() => setIsSubmitted(false), 3000);
   };
 
